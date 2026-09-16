@@ -1,0 +1,20 @@
+# Python
+backend/venv/
+__pycache__/
+*.pyc
+
+# Environment / Secrets
+.env
+.env.*
+!.env.example
+
+# React / Node
+frontend/node_modules/
+node_modules/
+frontend/dist/
+
+# Mac
+.DS_Store
+
+# VS Code
+.vscode/
