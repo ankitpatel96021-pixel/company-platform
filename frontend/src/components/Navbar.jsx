@@ -34,7 +34,7 @@ function Navbar() {
           </span>
 
           <span className="brand-text">
-            YourCompany
+            grabtechie
           </span>
         </a>
 

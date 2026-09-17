@@ -856,7 +856,7 @@ const handleSubmit = async (event) => {
               </span>
 
               <span className="brand-text">
-                YourCompany
+                grabtechie
               </span>
 
             </div>
@@ -902,7 +902,7 @@ const handleSubmit = async (event) => {
 
 
         <div className="footer-bottom">
-          © 2026 YourCompany. All rights reserved.
+          © 2026 grabtechie. All rights reserved.
         </div>
 
       </footer>
