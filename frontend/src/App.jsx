@@ -64,9 +64,8 @@ const handleSubmit = async (event) => {
 
   try {
     // Send form data to FastAPI backend
-    const response = await fetch(
-  "http://localhost:8000/api/contact",
-      {
+    fetch(`${import.meta.env.VITE_API_URL}/api/contact`, {
+      
         method: "POST",
 
         headers: {
