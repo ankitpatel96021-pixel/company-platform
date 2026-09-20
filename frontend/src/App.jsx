@@ -65,7 +65,7 @@ const handleSubmit = async (event) => {
   try {
     // Send form data to FastAPI backend
     const response = await fetch(
-      "http://127.0.0.1:8000/api/contact",
+  "http://localhost:8000/api/contact",
       {
         method: "POST",
 
