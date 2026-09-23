@@ -64,8 +64,9 @@ const handleSubmit = async (event) => {
 
   try {
     // Send form data to FastAPI backend
-    fetch(`${import.meta.env.VITE_API_URL}/api/contact`, {
-      
+    const response = await fetch(
+  `${import.meta.env.VITE_API_URL}/api/contact`,
+      {
         method: "POST",
 
         headers: {
@@ -216,10 +217,17 @@ const handleSubmit = async (event) => {
               business.
             </p>
 
-            <a href="#contact">
-              Get Started →
-            </a>
-
+            <a
+  href="#contact"
+  onClick={() =>
+    setFormData((previous) => ({
+      ...previous,
+      service: "website",
+    }))
+  }
+>
+  Get Started →
+</a>
           </div>
 
 
