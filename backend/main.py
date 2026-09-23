@@ -53,14 +53,13 @@ load_dotenv()
 
 # ==========================================
 # DATABASE CONFIGURATION
+# Reads the database URL from environment variables
 # ==========================================
 
-DATABASE_URL = (
-    "dbname=company_platform "
-    "user=ankit "
-    "host=localhost "
-    "port=5432"
-)
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL environment variable is not set")
 
 
 # ==========================================
@@ -117,11 +116,12 @@ app.add_middleware(
     CORSMiddleware,
 
     allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "https://grabtechie.com",
-        "https://www.grabtechie.com",
-    ],
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+    "https://grabtechie.com",
+    "https://www.grabtechie.com",
+],
 
     allow_credentials=True,
     allow_methods=["*"],
