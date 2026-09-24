@@ -288,23 +288,7 @@ def home():
     }
 
 
-# ==========================================
-# DATABASE TEST ROUTE
-# ==========================================
 
-@app.get("/api/db-test")
-def database_test():
-
-    connection = get_db_connection()
-
-    try:
-        return {
-            "success": True,
-            "message": "PostgreSQL connection successful!",
-        }
-
-    finally:
-        connection.close()
 
 
 # ==========================================
