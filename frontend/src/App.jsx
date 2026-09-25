@@ -872,6 +872,23 @@ const handleSubmit = async (event) => {
               Building modern digital experiences
               for ambitious businesses.
             </p>
+            {/* ==================================================
+    COMPANY CONTACT & FOUNDERS
+    ================================================== */}
+
+<p>
+  <strong>Co-Founders</strong>
+  <br />
+  Ankit Dangi
+  <br />
+  Chintu Napit
+</p>
+
+<p>
+  <a href="mailto:grabtechieofficial@gmail.com">
+    grabtechieofficial@gmail.com
+  </a>
+</p>
 
           </div>
 
