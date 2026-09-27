@@ -148,7 +148,20 @@ class ContactRequest(BaseModel):
     company: str
     service: str
     message: str
+# ==========================================
+# DEVELOPER APPLICATION DATA MODEL
+# Stores developer registration details
+# ==========================================
 
+class DeveloperApplication(BaseModel):
+    name: str
+    email: str
+    phone: str
+    primary_skill: str
+    technologies: str
+    experience: str
+    portfolio_url: str
+    bio: str
 
 # ==========================================
 # PASSWORD VERIFICATION
@@ -353,6 +366,11 @@ def admin_login(
 # PUBLIC ENDPOINT
 # ==========================================
 
+# ==========================================
+# CONTACT FORM API
+# PUBLIC ENDPOINT
+# ==========================================
+
 @app.post("/api/contact")
 def create_contact(
     request: ContactRequest
@@ -415,13 +433,248 @@ def create_contact(
     finally:
 
         connection.close()
+    
 
 
 # ==========================================
 # ADMIN CONTACT REQUESTS API
 # PROTECTED ENDPOINT
 # ==========================================
+# ==========================================
+# DEVELOPER APPLICATION API
+# PUBLIC ENDPOINT
+# Saves developer registration details
+# ==========================================
 
+@app.post("/api/developer-applications")
+def create_developer_application(
+    application: DeveloperApplication
+):
+    """
+    Save a new developer application
+    to the PostgreSQL database.
+    """
+
+    connection = get_db_connection()
+
+    try:
+
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            INSERT INTO developer_applications
+            (
+                name,
+                email,
+                phone,
+                primary_skill,
+                technologies,
+                experience,
+                portfolio_url,
+                bio
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING id
+            """,
+            (
+                application.name,
+                application.email,
+                application.phone,
+                application.primary_skill,
+                application.technologies,
+                application.experience,
+                application.portfolio_url,
+                application.bio,
+            )
+        )
+
+        application_id = cursor.fetchone()[0]
+
+        connection.commit()
+
+        cursor.close()
+
+        return {
+            "success": True,
+            "message": "Developer application submitted successfully!",
+            "id": application_id,
+        }
+
+    except Exception as error:
+
+        # Show the real database error in the terminal
+        print(
+            "DEVELOPER APPLICATION ERROR:",
+            repr(error),
+            flush=True
+        )
+
+        connection.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to save developer application.",
+        )
+
+    finally:
+
+        connection.close()
+        # ==========================================
+# ADMIN DEVELOPER APPLICATIONS API
+# PROTECTED ENDPOINT
+# Returns all developer applications
+# ==========================================
+
+@app.get("/api/developer-applications")
+def get_developer_applications(
+    current_admin=Depends(get_current_admin)
+):
+    """
+    Return all developer applications.
+    Requires valid admin JWT token.
+    """
+
+    connection = get_db_connection()
+
+    try:
+
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            SELECT
+                id,
+                name,
+                email,
+                phone,
+                primary_skill,
+                technologies,
+                experience,
+                portfolio_url,
+                bio,
+                status,
+                created_at
+            FROM developer_applications
+            ORDER BY id DESC
+            """
+        )
+
+        rows = cursor.fetchall()
+        applications = []
+
+        for row in rows:
+
+            applications.append(
+                {
+                    "id": row[0],
+                    "name": row[1],
+                    "email": row[2],
+                    "phone": row[3],
+                    "primary_skill": row[4],
+                    "technologies": row[5],
+                    "experience": row[6],
+                    "portfolio_url": row[7],
+                    "bio": row[8],
+                    "status": row[9],
+                    "created_at": row[10],
+                }
+            )
+
+        cursor.close()
+
+        return {
+            "success": True,
+            "applications": applications,
+        }
+
+    finally:
+
+        connection.close()
+    # ==========================================
+# UPDATE DEVELOPER APPLICATION STATUS API
+# PROTECTED ENDPOINT
+# Approve or reject a developer application
+# ==========================================
+
+class DeveloperStatusUpdate(BaseModel):
+    status: str
+
+
+@app.patch("/api/developer-applications/{application_id}/status")
+def update_developer_application_status(
+    application_id: int,
+    request: DeveloperStatusUpdate,
+    current_admin=Depends(get_current_admin)
+):
+    """
+    Update the status of a developer application.
+    Allowed statuses: approved or rejected.
+    Requires valid admin JWT token.
+    """
+
+    # Only allow valid review statuses
+    if request.status not in ["approved", "rejected"]:
+        raise HTTPException(
+            status_code=400,
+            detail="Status must be approved or rejected."
+        )
+
+    connection = get_db_connection()
+
+    try:
+
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            UPDATE developer_applications
+            SET status = %s
+            WHERE id = %s
+            RETURNING id, status
+            """,
+            (
+                request.status,
+                application_id,
+            )
+        )
+
+        updated_application = cursor.fetchone()
+
+        # Application ID not found
+        if updated_application is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Developer application not found."
+            )
+
+        connection.commit()
+
+        cursor.close()
+
+        return {
+            "success": True,
+            "message": "Developer application status updated successfully!",
+            "id": updated_application[0],
+            "status": updated_application[1],
+        }
+
+    except HTTPException:
+        connection.rollback()
+        raise
+
+    except Exception:
+
+        connection.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to update developer application status.",
+        )
+
+    finally:
+
+        connection.close()    
 @app.get("/api/contact-requests")
 def get_contact_requests(
     current_admin=Depends(get_current_admin)

@@ -21,7 +21,7 @@ const [formData, setFormData] = useState({
 });
 
 const [formStatus, setFormStatus] = useState("");
-
+const [showDeveloperForm, setShowDeveloperForm] = useState(false);
 // ==========================================
 // HANDLE INPUT CHANGES
 // ==========================================
@@ -109,6 +109,70 @@ const handleSubmit = async (event) => {
 
     setFormStatus(
       "Unable to send request. Please try again."
+    );
+  }
+};
+// ==========================================
+// HANDLE DEVELOPER APPLICATION
+// Sends developer form data to FastAPI backend
+// ==========================================
+
+const handleDeveloperSubmit = async (event) => {
+  event.preventDefault();
+
+  // Collect form values
+  const form = event.currentTarget;
+  const formData = new FormData(form);
+
+  const developerData = {
+    name: formData.get("developerName"),
+    email: formData.get("developerEmail"),
+    phone: formData.get("developerPhone"),
+    primary_skill: formData.get("primarySkill"),
+    technologies: formData.get("technologies"),
+    experience: formData.get("experience"),
+    portfolio_url: formData.get("portfolio"),
+    bio: formData.get("developerBio"),
+  };
+
+  try {
+    // Send developer data to FastAPI backend
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/developer-applications`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(developerData),
+      }
+    );
+
+    const result = await response.json();
+
+    // Check backend response
+    if (!response.ok) {
+      throw new Error(
+        result.detail || "Unable to submit application."
+      );
+    }
+
+    // Show success message
+    alert("Application submitted successfully!");
+
+    // Clear form
+    form.reset();
+
+  } catch (error) {
+    console.error(
+      "Developer application error:",
+      error
+    );
+
+    alert(
+      "Unable to submit application. Please try again."
     );
   }
 };
@@ -551,88 +615,233 @@ const handleSubmit = async (event) => {
           </p>
 
         </div>
+<div className="developers-grid">
+
+  {/* ==================================================
+      CO-FOUNDER 1
+      ================================================== */}
+  <div className="glass-card developer-card">
+
+    <div className="developer-avatar">
+      A
+    </div>
+
+    <h3>
+      Ankit Dangi
+    </h3>
+
+    <p>
+      Co-Founder
+    </p>
+
+    <span>
+      Strategy • Product • Technology
+    </span>
+
+    <a href="#contact">
+      Work With Us →
+    </a>
+
+  </div>
 
 
-        <div className="developers-grid">
+  {/* ==================================================
+      CO-FOUNDER 2
+      ================================================== */}
+  <div className="glass-card developer-card">
 
-          {/* Developer 1 */}
-          <div className="glass-card developer-card">
+    <div className="developer-avatar">
+      C
+    </div>
 
-            <div className="developer-avatar">
-              A
-            </div>
+    <h3>
+      Deshraj khurdra
+    </h3>
 
-            <h3>
-              Alex Sharma
-            </h3>
+    <p>
+      Co-Founder
+    </p>
 
-            <p>
-              Full Stack Developer
-            </p>
+    <span>
+      Business • Product • Technology
+    </span>
 
-            <span>
-              React • JavaScript • Python
-            </span>
+    <a href="#contact">
+      Work With Us →
+    </a>
 
-            <a href="#contact">
-              Book Developer →
-            </a>
+  </div>
 
-          </div>
+</div>
+
+        {/* ==================================================
+    JOIN OUR DEVELOPER NETWORK
+    Frontend UI - backend will be connected later
+    ================================================== */}
+{/* ==================================================
+    DEVELOPER APPLICATION TOGGLE
+    ================================================== */}
+
+<button
+  type="button"
+  className="primary-button"
+  onClick={() => setShowDeveloperForm(!showDeveloperForm)}
+>
+  {showDeveloperForm
+    ? "Close Developer Application"
+    : "Join as a Developer →"}
+</button>
+{showDeveloperForm && (
+<div className="developer-join-card glass-card">
+
+  <div className="section-heading">
+
+    <span className="section-label">
+      Join Our Network
+    </span>
+
+    <h2>
+      Are You a
+      <br />
+      Developer?
+    </h2>
+
+    <p>
+      Join the GrabTechie developer network and
+      showcase your skills, experience and projects.
+    </p>
+
+  </div>
 
 
-          {/* Developer 2 */}
-          <div className="glass-card developer-card">
+  {/* Developer Registration Form */}
+  <form
+  className="contact-form developer-join-form"
+  onSubmit={handleDeveloperSubmit}
+>
 
-            <div className="developer-avatar">
-              R
-            </div>
-
-            <h3>
-              Riya Patel
-            </h3>
-
-            <p>
-              Frontend Developer
-            </p>
-
-            <span>
-              React • UI/UX • CSS
-            </span>
-
-            <a href="#contact">
-              Book Developer →
-            </a>
-
-          </div>
+    {/* Full Name */}
+    <input
+      type="text"
+      placeholder="Full Name"
+      name="developerName"
+    />
 
 
-          {/* Developer 3 */}
-          <div className="glass-card developer-card">
+    {/* Email */}
+    <input
+      type="email"
+      placeholder="Email Address"
+      name="developerEmail"
+    />
 
-            <div className="developer-avatar">
-              M
-            </div>
 
-            <h3>
-              Mohit Verma
-            </h3>
+    {/* Phone */}
+    <input
+      type="text"
+      placeholder="Phone Number"
+      name="developerPhone"
+    />
 
-            <p>
-              Backend Developer
-            </p>
 
-            <span>
-              Python • APIs • Databases
-            </span>
+    {/* Primary Skill */}
+    <select name="primarySkill" defaultValue="">
+      <option value="" disabled>
+        Select Primary Skill
+      </option>
 
-            <a href="#contact">
-              Book Developer →
-            </a>
+      <option value="frontend">
+        Frontend Developer
+      </option>
 
-          </div>
+      <option value="backend">
+        Backend Developer
+      </option>
 
-        </div>
+      <option value="fullstack">
+        Full Stack Developer
+      </option>
+
+      <option value="uiux">
+        UI / UX Designer
+      </option>
+
+      <option value="ai-ml">
+        AI / ML Developer
+      </option>
+
+      <option value="mobile">
+        Mobile App Developer
+      </option>
+    </select>
+
+
+    {/* Technologies */}
+    <input
+      type="text"
+      placeholder="Technologies (React, Python, Node.js...)"
+      name="technologies"
+    />
+
+
+    {/* Experience */}
+    <select name="experience" defaultValue="">
+      <option value="" disabled>
+        Experience Level
+      </option>
+
+      <option value="student">
+        Student / Beginner
+      </option>
+
+      <option value="0-1">
+        0–1 Year
+      </option>
+
+      <option value="1-3">
+        1–3 Years
+      </option>
+
+      <option value="3+">
+        3+ Years
+      </option>
+    </select>
+
+
+    {/* Portfolio */}
+    <input
+      type="url"
+      placeholder="Portfolio / GitHub URL"
+      name="portfolio"
+    />
+
+
+    {/* About Developer */}
+    <textarea
+      name="developerBio"
+      rows="5"
+      placeholder="Tell us about yourself, your skills and the projects you have worked on..."
+    ></textarea>
+
+
+    {/* Submit */}
+    <button
+      type="submit"
+      className="primary-button"
+    >
+      Apply as Developer →
+    </button>
+
+  </form>
+
+</div>
+)}
+          
+
+
+          
+
+        
 
       </section>
 
@@ -881,7 +1090,7 @@ const handleSubmit = async (event) => {
   <br />
   Ankit Dangi
   <br />
-  Chintu Napit
+  Deshraj khurdra
 </p>
 
 <p>
