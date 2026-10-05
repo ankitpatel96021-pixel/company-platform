@@ -3,5 +3,6 @@ uvicorn[standard]
 psycopg[binary]
 python-jose[cryptography]
 passlib[bcrypt]
+bcrypt==4.3.0
 python-multipart
 python-dotenv
